@@ -19,6 +19,8 @@ public class PGATourSuperstore implements Publisher {
     ArrayList<Staff> departedStaff = new ArrayList<Staff>();
     ArrayList<Item> inventory;
     ArrayList<Item> soldInventory;
+    ArrayList<Customer> pastCustomers = new ArrayList<Customer>();
+    int numCustomersTotal = 0;
     protected String storeNum;
     //ArrayList<Customer> serviceOrders;
     private GoodsFactory goodCreate;
@@ -354,15 +356,29 @@ public class PGATourSuperstore implements Publisher {
         // Make this as a to-do (future work)
     }
 
-
+    public void printRecipt()
+    {
+        for(int i = numCustomersTotal; i < pastCustomers.size(); i++)
+        {
+            Customer currCustomer = pastCustomers.get(i);
+            System.out.println("Customer: " + currCustomer.name);
+            for(int j = 0; j < currCustomer.getCartSize(); j++)
+            {
+                Item currItem = currCustomer.getCartAt(j);
+                System.out.println(currItem.getBrand() +" "+ currItem.getModel()+ "........" + currItem.getPrice());
+                notifySubscriber("log", currItem.getBrand() +" "+ currItem.getModel()+ "........" + currItem.getPrice());
+            }
+        }
+    }
     public void selling(Customer joe)
     {
         double beforeSelling = netSales;
 
-        double netsaleAfter =sell.selling(joe, employees, inventory, soldInventory, netSales, staffEarnings);
+        double netsaleAfter =sell.selling(joe, employees, inventory, soldInventory, netSales, staffEarnings, pastCustomers);
         netSales += (netsaleAfter-beforeSelling);
         income (netsaleAfter-beforeSelling);//to account for only the most recent sale
         reCount();
+        printRecipt();
         }
 
     public void quitting()
@@ -375,6 +391,7 @@ public class PGATourSuperstore implements Publisher {
             {
                 int quit = rand.nextInt(employees[i].size());
                 Staff quitter = employees[i].get(quit);
+                totalEmployees--;
                 if(i == 2)//manager then replace right away
                 {
                     int pull = rand.nextInt(employees[1].size());
