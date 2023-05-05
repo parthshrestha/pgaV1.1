@@ -43,7 +43,7 @@ public class Customer {
             jobToEachClub.put(currClub.getClubHead() ,new ArrayList<Enums.ServiceType>());
         }
         generateService();
-        handSize = rand.nextDouble(6)+6;// this way min is 6
+        handSize = rand.nextDouble(6.0)+6.0;// this way min is 6
 
 
     }
@@ -190,6 +190,15 @@ public class Customer {
     {
         cart.add(item);
     }
+    public Item getCartAt(int i)
+    {
+        return cart.get(i);
+    }
+    public int getCartSize()
+    {
+        return cart.size();
+    }
+
     public void printRecipt()
     {
         System.out.println("");
