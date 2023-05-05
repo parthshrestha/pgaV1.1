@@ -16,6 +16,7 @@ import java.util.Random;
 
 public class PGATourSuperstore implements Publisher {
     ArrayList<Staff>[] employees;//[fritter,logistics, management, Service person, Soft goods]
+    ArrayList<Staff> departedStaff = new ArrayList<Staff>();
     ArrayList<Item> inventory;
     ArrayList<Item> soldInventory;
     protected String storeNum;
@@ -26,18 +27,18 @@ public class PGATourSuperstore implements Publisher {
     private double netSales;
     double staffEarnings = 0.0;
     // Counter for items
-    private int bagCounter = 0;
-    private int ballCounter = 0;
-    private int clothingCounter = 0;
-    private int clubCounter = 0;
-    private int gloveCounter = 0;
-    private int shoeCounter = 0;
-    private int accessoryCounter= 0;
-    private int gripCounter = 0;
-    private int racketCounter = 0;
-    private int shaftCounter = 0;
-    private boolean initialized;
-    private int totalEmployees = 0;
+    int bagCounter = 0;
+    int ballCounter = 0;
+     int clothingCounter = 0;
+   int clubCounter = 0;
+     int gloveCounter = 0;
+     int shoeCounter = 0;
+     int accessoryCounter= 0;
+     int gripCounter = 0;
+     int racketCounter = 0;
+     int shaftCounter = 0;
+     boolean initialized;
+     int totalEmployees = 0;
     final String ANSI_RESET = "\u001B[0m";
     final String ANSI_RED = "\u001B[31m";//learned on geeks for geeks
     Service s;
@@ -63,7 +64,7 @@ public class PGATourSuperstore implements Publisher {
         s = new Service(storeNum);
 //      ecom = new Ecommerce(storeNum);
         fit = new Fitting(storeNum);
-//      sell = new Selling(storeNum);
+        sell = new Selling(storeNum);
         initialized = false;
         fillInventory();
         initialized = true;
@@ -74,11 +75,11 @@ public class PGATourSuperstore implements Publisher {
     public void income(double money)
     {
         budget += money;
-//        notifySubscriber(name,"budgetAdd", String.valueOf(money));
+        notifySubscriber("budgetAdd", String.valueOf(money));
     }
     public void expense(double money){
         budget -= money;
-//        notifySubscriber(name,"budgetSub", String.valueOf(money));
+        notifySubscriber("budgetSub", String.valueOf(money));
         if (budget < 0)
         {
             income(250000.0);
@@ -100,7 +101,53 @@ public class PGATourSuperstore implements Publisher {
 //    }
 
 
+    public void reCount()
+    {
+        bagCounter = 0;
+        ballCounter = 0;
+        clothingCounter = 0;
+        clubCounter = 0;
+        gloveCounter = 0;
+        shoeCounter = 0;
+        accessoryCounter= 0;
+        gripCounter = 0;
+        racketCounter = 0;
+        shaftCounter = 0;
+        for(int i =0; i< inventory.size(); i++)
+        {
 
+            Item currItem = inventory.get(i);
+            if(currItem.getType() == Enums.Goods.Clothing)
+            {
+                clothingCounter++;
+            } else if (currItem.getType() == Enums.Goods.Club) {
+                clubCounter++;
+            }
+            else if (currItem.getType() == Enums.Goods.Glove) {
+                gloveCounter++;
+            }
+            else if (currItem.getType() == Enums.Goods.Grip) {
+                gripCounter++;
+            }
+            else if (currItem.getType() == Enums.Goods.Shaft) {
+                shaftCounter++;
+            }else if (currItem.getType() == Enums.Goods.Accessory) {
+                accessoryCounter++;
+            }
+            else if (currItem.getType() == Enums.Goods.Bag) {
+                bagCounter++;
+            }
+            else if (currItem.getType() == Enums.Goods.Balls) {
+                ballCounter++;
+            }
+            else if (currItem.getType() == Enums.Goods.Racket) {
+                racketCounter++;
+            }
+            else if (currItem.getType() == Enums.Goods.Shoes) {
+                shoeCounter++;
+            }
+        }
+    }
     public void fillInventory(){//fix initialized and add inventory
         while(bagCounter < 10 ||
                 clothingCounter < 10 ||
@@ -290,6 +337,7 @@ public class PGATourSuperstore implements Publisher {
         double afterService= s.service(serviceOrders, employees[3], beforeService);
         double expended = beforeService-afterService;
         expense(expended);
+        reCount();
     }
     public void fitting(ArrayList<Customer> serviceOrders)
     {
@@ -299,57 +347,240 @@ public class PGATourSuperstore implements Publisher {
         double afterService = fit.clubFitting(serviceOrders,employees[0],beforeService);
         double expended = beforeService-afterService;
         expense(expended);
+        reCount();
     }
     public void pickupEcom()
     {
         // Make this as a to-do (future work)
     }
-    public void Selling(Customer joe)
+
+
+    public void selling(Customer joe)
     {
         double beforeSelling = netSales;
 
         double netsaleAfter =sell.selling(joe, employees, inventory, soldInventory, netSales, staffEarnings);
         netSales += (netsaleAfter-beforeSelling);
         income (netsaleAfter-beforeSelling);//to account for only the most recent sale
-        //aiden's copy of selling to be implemented in selling class
-//        int minNumSales = 10;
-//        int maxNumSales = 20;
-//
-//        //Random number of sales
-//        Random rand = new Random();
-//        int numSales = rand.nextInt(maxNumSales - minNumSales + 1) + minNumSales;
-//
-//        for(int i = 0; i < numSales; i++)
-//        {
-//            //Select random staff
-//            int staffIndex = rand.nextInt(this.employees[3].size());
-//            Staff salesman = this.employees[3].get(staffIndex);
-//
-//            //Select random item
-//            int itemIndex = rand.nextInt(this.employees.size());
-//            Item item = this.employees.get(itemIndex);
-//
-//            //Add money to budget
-//            this.budget -= item.getPrice();
-//
-//            //Give staff
-//            double bonus = item.getPrice() / 10;
-//
-//            //Log
-//            System.out.println("Sold" + item.getModel() + " for " + item.getPrice());
-//            System.out.println(salesman.getName() + "received a bonus of: " + bonus);
-//
-//            //remove random item from arrayList
-//            this.employees.remove(item);
+        reCount();
         }
 
+    public void quitting()
+    {
+        for(int i = employees.length-2; i > 0; i--)//for staff other than driver
+        {
+            Random rand = new Random();
+            double chance = rand.nextDouble();//0-1
+            if(chance <=0.1)
+            {
+                int quit = rand.nextInt(employees[i].size());
+                Staff quitter = employees[i].get(quit);
+                if(i == 2)//manager then replace right away
+                {
+                    int pull = rand.nextInt(employees[1].size());
+                    System.out.println(": There are this many logistics associates that could get promoted:" + employees[0].size());
+                    notifySubscriber("log","There are this many logistics associates that could get promoted:" + employees[0].size());
+                    Staff logistic = employees[1].get(pull);//pulls random intern
 
-    public void ending()
+                    Management manager = new Management();
+                    manager.setName(logistic.getName());
+                    manager.setBalance(logistic.getBalance());
+                    manager.setDaysWorked(logistic.getDaysWorked());
+                    manager.setBonus(logistic.getBonusEarned());
+                    manager.setType(logistic.getType());
+                    manager.setId(logistic.getId());
+
+
+                }
+                else{
+
+                    departedStaff.add(quitter);//graveyard
+                    System.out.println(quitter.getName()+" Quit the job");
+                    employees[i].remove(quit);//remove employee
+                }
+
+            }
+        }
+    }
+    public void staffReport()
+    {
+        //active staff
+        System.out.println("======Here is the reports on all active staff members======");
+        String data[] = new String[5];
+        for(int i = 0; i < employees.length;i++)
+        {
+            System.out.println(": -----"+employees[i].get(0).getType()+ "s List-----");
+            notifySubscriber("log","-----"+employees[i].get(0).getType() + "s List-----");
+            data[0] = "Name";
+            data[1] = "Total days worked";
+            data[2] = "Total Earnings";
+            data[3] = "Total Bonus Earned";
+            data[4] = "Work Status";
+            notifySubscriber("logstaff",data[0]);
+            notifySubscriber("logstaff",data[1]);
+            notifySubscriber("logstaff",data[2]);
+            notifySubscriber("logstaff",data[3]);
+            notifySubscriber("logstaffln",data[4]);
+            System.out.printf(": "+"%-25s%-25s%-25s%-25s%-25s\n", data); //print headers
+            for(int j = 0; j < employees[i].size();j++)
+            {
+//                System.out.println("=================================");
+                Staff currEmp = employees[i].get(j);
+
+                data[0] = currEmp.getName();
+                data[1] = String.valueOf(currEmp.getDaysWorked());
+                data[2] = String.valueOf(currEmp.getBalance());
+                data[3] = String.valueOf(currEmp.getBonus());
+                data[4] = "Active";
+                System.out.printf("%-25s%-25s%-25s%-25s%-25s\n", data); //print data
+                notifySubscriber("logstaff",data[0]);
+                notifySubscriber("logstaff",data[1]);
+                notifySubscriber("logstaff",data[2]);
+                notifySubscriber("logstaff",data[3]);
+                notifySubscriber("logstaffln",data[4]);//newline
+            }
+        }
+        //inactive staff
+        System.out.println(" ");//white space
+        System.out.println(" =====Here is the reports on all Terminated staff members======");
+        notifySubscriber("log","======Here is the reports on all Terminated staff members======");
+        if(departedStaff.size() == 0)
+        {
+            System.out.println(" No Staff Members have quit so far");
+        }
+        else {
+            data[0] = "Name";
+            data[1] = "Total days worked";
+            data[2] = "Total Earnings";
+            data[3] = "Total Bonus Earned";
+            data[4] = "Work Status";
+            notifySubscriber("logstaff",data[0]);
+            notifySubscriber("logstaff",data[1]);
+            notifySubscriber("logstaff",data[2]);
+            notifySubscriber("logstaff",data[3]);
+            notifySubscriber("logstaffln",data[4]);
+            System.out.printf("%-25s%-25s%-25s%-25s%-25s\n", data); //print headers
+            for (int i = 0; i < departedStaff.size(); i++) {
+//                System.out.println("=================================");
+                Staff currEmp1 = departedStaff.get(i);
+
+                data[0] = currEmp1.getName();
+                data[1] = String.valueOf(currEmp1.getDaysWorked());
+                data[2] = String.valueOf(currEmp1.getBalance());
+                data[3] = String.valueOf(currEmp1.getBonus());
+                data[4] = "Inactive";
+                System.out.printf("%-25s%-25s%-25s%-25s%-25s\n", data); //print data
+                notifySubscriber("logstaff",data[0]);
+                notifySubscriber("logstaff",data[1]);
+                notifySubscriber("logstaff",data[2]);
+                notifySubscriber("logstaff",data[3]);
+                notifySubscriber("logstaffln",data[4]);//newline
+
+            }
+        }
+    }
+    public void showInventory()
+    {
+        String data[] = new String[7];
+        System.out.println(" ====Current FNCD Inventory====");
+        notifySubscriber("log","====Current FNCD Inventory====");
+        data[0] = "Make&Model";
+        data[1] ="Year";
+        data[2] = "MSRP";
+        data[3] = "Vin";
+        data[4] = "Condition";
+        data[5] = "Cleanliness";
+        data[6] = "Inventory Status";
+        notifySubscriber("logInventory",data[0]);
+        notifySubscriber("logInventory",data[1]);
+        notifySubscriber("logInventory",data[2]);
+        notifySubscriber("logInventory",data[3]);
+        notifySubscriber("logInventory",data[4]);
+        notifySubscriber("logInventory",data[5]);
+        notifySubscriber("logInventoryln",data[6]);
+        System.out.printf("%-25s%-25s%-25s%-25s%-25s%-25s%-25s\n", data); //print headers
+        for(int i = 0; i < inventory.size(); i++)
+        {
+            Item item = inventory.get(i);
+
+            data[0] =item.getBrand()+" "+item.getModel();
+            data[1] = String.valueOf(item.getUpc());
+            data[2] = String.valueOf(item.getPrice());
+            data[3] = String.valueOf(item.getType());
+            data[4] = "In Stock";
+            notifySubscriber("logInventory",data[0]);
+            notifySubscriber("logInventory",data[1]);
+            notifySubscriber("logInventory",data[2]);
+            notifySubscriber("logInventory",data[3]);
+            notifySubscriber("logInventory",data[4]);
+            System.out.printf("%-25s%-25s%-25s%-25s%-25s\n", data);
+        }
+        System.out.println("  ");
+        System.out.println(" ====PGA Sold List====");
+        notifySubscriber("log","====PGA Sold List====");
+        if (soldInventory.size() == 0)
+        {
+            System.out.println(" No cars sold yet");
+        }
+        for(int i = 0; i < soldInventory.size(); i++)
+        {
+
+
+            Item item = soldInventory.get(i);
+
+            data[0] =item.getBrand()+" "+item.getModel();
+            data[1] = String.valueOf(item.getUpc());
+            data[2] = String.valueOf(item.getPrice());
+            data[3] = String.valueOf(item.getType());
+            data[4] = "In Stock";
+            notifySubscriber("logInventory",data[0]);
+            notifySubscriber("logInventory",data[1]);
+            notifySubscriber("logInventory",data[2]);
+            notifySubscriber("logInventory",data[3]);
+            notifySubscriber("logInventory",data[4]);
+            System.out.printf("%-25s%-25s%-25s%-25s%-25s\n", data);
+        }
+
+    }
+    public void report()
+    {
+        System.out.println(" ====End of day report====");
+        notifySubscriber("log","====End of day report====");
+        staffReport();
+        showInventory();
+    }
+    public double ending()
     {
         // Later
         // make it similar to FNCD
         // fire people
         //
+        for(int i = 0; i < employees.length; i++ ) //pay all employees
+        {
+            for(int j = 0; j < employees[i].size(); j++)
+            {
+                Staff currEmployee = employees[i].get(j);
+//                System.out.println("Days worked before pay"+currEmployee.daysWorked);
+                double pay = currEmployee.pay();
+                expense(pay);
+//                System.out.println("Days worked after pay"+currEmployee.daysWorked);
+                notifySubscriber("budget", String.valueOf(pay));
+                notifySubscriber("staff", String.valueOf(pay));
+
+            }
+
+        }
+        quitting();//chance staff type quitting
+        report();// generates report
+
+        System.out.println("____Totals____"+storeNum);
+
+        System.out.println("Operating Budget: " + budget);
+        System.out.println("Net Sales Today: " + netSales);
+        double temp = netSales;
+        netSales = 0;//reset everyday
+        return temp;
+
     }
 
 
