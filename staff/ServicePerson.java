@@ -19,8 +19,10 @@ public class ServicePerson extends Staff{
         serviceType = generateServiceType();
     }
     @Override
-    public void pay() {
+    public double pay() {
         balance += payRate;
+        daysWorked++;
+        return payRate;
     }
     public int getNumServiced()
     {return numServiced;}

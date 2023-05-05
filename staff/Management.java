@@ -11,7 +11,9 @@ public class Management extends Staff{
         type = Enums.StaffType.Management;
     }
     @Override
-    public void pay() {
+    public double pay() {
         balance += payRate;
+        daysWorked++;
+        return payRate;
     }
 }

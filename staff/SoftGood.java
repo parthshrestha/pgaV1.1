@@ -13,7 +13,9 @@ public class SoftGood extends Staff{
         type = Enums.StaffType.SoftGood;
     }
     @Override
-    public void pay() {
+    public double pay() {
         balance += payRate;
+        daysWorked++;
+        return payRate;
     }
 }

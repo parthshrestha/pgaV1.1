@@ -11,7 +11,9 @@ public class Fitter extends Staff{
         type = Enums.StaffType.Fitter;
     }
     @Override
-    public void pay() {
+    public double pay() {
         balance += payRate;
+        daysWorked++;
+        return payRate;
     }
 }

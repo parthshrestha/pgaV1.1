@@ -70,7 +70,7 @@ public abstract class Staff {
         }
         return generateName;
     }
-    public abstract void pay();// different  per class depending on fixed rates
+    public abstract double pay();// different  per class depending on fixed rates
     // getters
     public String getName()
     {
@@ -107,5 +107,24 @@ public abstract class Staff {
         this.type = type;
     }
 
+    public Double getBonus() {
+        return bonusEarned;
+    }
+
+    public void setName(String _name) {
+        name = _name;
+    }
+    public void setDaysWorked(int days)
+    {
+        daysWorked = days;
+    }
+    public void setId(String identity)
+    {
+        id = identity;
+    }
+    public String getId()
+    {
+        return id;
+    }
 }
 

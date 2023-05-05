@@ -10,7 +10,9 @@ public class Logistics extends Staff{
         type = Enums.StaffType.Logistic;
     }
     @Override
-    public void pay() {
+    public double pay() {
         balance += payRate;
+        daysWorked++;
+        return payRate;
     }
 }
