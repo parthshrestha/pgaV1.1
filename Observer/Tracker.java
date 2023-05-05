@@ -24,18 +24,7 @@ public class Tracker implements Subscriber{
                 budget -= Double.parseDouble(msg);
             }
 
-            if(type == "staff")
-            {
-                staffExpense1 += Double.parseDouble(msg);
-            }
-            else if(type == "budgetAdd")
-            {
-                budget1 += Double.parseDouble(msg);
-            }
-            else if(type == "budgetSub")
-            {
-                budget1 -= Double.parseDouble(msg);
-            }
+
 
 
 
