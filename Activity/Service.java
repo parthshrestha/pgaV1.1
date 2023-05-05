@@ -70,7 +70,7 @@ public class Service implements Publisher {
                                     employee.setBonus(bonus);
                                     budget-= bonus;
                                     System.out.println(employee.getName() +" Earned bonus of: " + bonus);
-
+                                    notifySubscriber("staff",String.valueOf(bonus));
                             }
                         }
                         //after doing all jobs change the condition to better or worse or the same
