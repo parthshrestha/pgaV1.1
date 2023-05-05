@@ -68,7 +68,8 @@ public class Simulation implements Publisher {
             }
             for(int i = 0; i <  pga.size(); i++)
             {
-                pga.get(i).selling(customers.get(i));
+                if(customers.size() >0)
+                pga.get(i).selling(customers.get(0));
             }
             for(int i = 0; i <  pga.size(); i++)
             {
